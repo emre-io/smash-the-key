@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 
 function App() {
-  const [startTimer, setStartTimer] = useState(0);
+  const [startTimer, setStartTimer] = useState(false);
+  const [gameStart, setGameStart] = useState(false);
   const [player1RandomChar, setPlayer1RandomChar] = useState("");
   const [player2RandomChar, setPlayer2RandomChar] = useState("");
   const [time, setTime] = useState(3);
@@ -27,7 +28,6 @@ function App() {
   };
 
   const handler = ({ key }) => {
-    //handleStop();
     if (player1RandomChar === String(key)) {
       setPlayer1Won("won");
     } else if (player2RandomChar === String(key)) {
@@ -42,13 +42,14 @@ function App() {
       let timer = setInterval(() => {
         setTime((time) => {
           if (time === 0) {
-            setPlayer1RandomChar(
-              ALPHABET[Math.floor(Math.random() * ALPHABET.length)]
-            );
-            setPlayer2RandomChar(
-              ALPHABET[Math.floor(Math.random() * ALPHABET.length)]
-            );
-            //handleStart();
+            var char1 = ALPHABET[Math.floor(Math.random() * ALPHABET.length)]
+            var char2 = ALPHABET[Math.floor(Math.random() * ALPHABET.length)]
+            while (char1 === char2) {
+              char2 = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+            }
+            setPlayer1RandomChar(char1);
+            setPlayer2RandomChar(char2);
+            setGameStart(true);
             clearInterval(timer);
             return 0;
           } else return time - 1;
@@ -58,56 +59,42 @@ function App() {
   }, [startTimer]);
 
   function handleCountdownStart() {
-    setStartTimer(1);
+    setStartTimer(true);
   }
 
   return (
     <div className="App">
       <div className="h-screen flex flex-col justify-center items-center gap-3">
-        <div className="container border-4">
-          <div className="flex flex-row gap-3 justify-evenly">
-            <div>
-              <p className={`${player1Won} bg-sky-500 px-2 py-0.25 my-0.5`}>
-                {" "}
+        <div className="text-3xl"> Smash the key! </div>
+        <div className="h-auto container border-2 border-black rounded">
+          <div className="text-xl grid gap-2 grid-cols-2 content-stretch text-center">
+            <div className={`${player1Won} bg-sky-500 py-0.5 mt-4 mb-2 mx-6 rounded`}>
                 Player 1
-              </p>
             </div>
-            <div>
-              <p className={`${player2Won} bg-sky-500 px-2 py-0.25 my-0.5`}>
-                {" "}
+            <div className={`${player2Won} bg-sky-500 py-0.5 mt-4 mb-2 mx-6 rounded`}>
                 Player 2
-              </p>
             </div>
           </div>
-          <div className="flex flex-row gap-3 justify-evenly">
-            <div>
-              <p className="bg-sky-500 px-2 py-0.25 my-0.5">
-                {player1RandomChar}
-              </p>
-            </div>
-            <div>
-              <p className="bg-sky-500 px-2 py-0.25 my-0.5">
-                {player2RandomChar}
-              </p>
-            </div>
+          <div className="text-4xl grid gap-2 grid-cols-2 content-stretch text-center">
+              <div className="bg-sky-500 py-0.5 my-0.5 mx-6 flex items-center justify-center rounded">
+                {gameStart ? player1RandomChar : "Not started"}
+              </div>
+              <div className="bg-sky-500 py-0.5 my-0.5 mx-6 flex items-center justify-center rounded">
+                {gameStart ? player2RandomChar : "Not started"}
+              </div>
           </div>
-        </div>
-        <div>
-          <div className="flex flex-row gap-3 justify-evenly">
-            <p>
-              Time left: {`${Math.floor(time / 60)}`.padStart(2, 0)}:
-              {`${time % 60}`.padStart(2, 0)}
-            </p>
+          <div className="text-2xl flex justify-evenly">
+              Time left till start: {`${time % 60}`.padStart(1, 0)} seconds
           </div>
-          <div className="flex flex-row gap-3 justify-evenly">
+          <div className="flex flex-row gap-3 justify-around">
             <button
-              className="py-0.5 px-1 rounded bg-indigo-500 mx-1"
+              className="py-0.5 px-1 rounded bg-indigo-500 my-2"
               onClick={() => handleCountdownStart()}
             >
               Start
             </button>
             <button
-              className="py-0.5 px-1 rounded bg-indigo-500"
+              className="py-0.5 px-1 rounded bg-indigo-500 my-2"
               onClick={() => window.location.reload()}
             >
               Play Again
